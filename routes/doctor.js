@@ -28,7 +28,6 @@ const paymentsController = new CrudService(Payments, PaymentsValidator)
 router.post('/patient',async function(req, res, next) {
     try {
         const {name, email, address, phone, sex, dob, age, bloodgroup, tor} = req.body
-        patientValidator.validate({name, email, address, phone, sex, dob, age, bloodgroup, tor})
         await PatientController.create({name, email, address, phone, sex, dob, age, bloodgroup, tor})
         return res.status(200).send('Added Successfully')
     } catch (error) {
@@ -50,7 +49,6 @@ router.put('/patient/:id', async function(req, res, next) {
     try {
         const{ name, email, address, phone, sex, dob, age, bloodgroup, tor } = req.body
         const id = req.params.id
-        patientValidator.validate({name, email, address, phone, sex, dob, age, bloodgroup, tor})
         await PatientController.update(id,{name, email, address, phone, sex, dob, age, bloodgroup, tor})
         return res.status(200).send('Updated Successfully')
     } catch (error) {
@@ -73,9 +71,12 @@ router.delete('/patient/:id', async function(req, res, next) {
 router.post('/prescription',async function(req, res, next) {
     try {
         const { doctorid, patientid,casehistory, description, medication, date, drugamount} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        PrescriptionValidator.validate({name, doctorid, patientid, casehistory, description, medication, date, drugamount})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         let prescription =  await PrescriptionController.create({name, doctorid, patientid, casehistory, description, medication, date, drugamount})
         // =======================================================================================
         let doctor = await Staffs.findOne({_id : doctorid})
@@ -100,7 +101,6 @@ router.get('/prescription', async function(req, res, next) {
         const {edit,q} = req.query
         let populate = 'patients doctor'
         const prescriptions = await PrescriptionController.read(edit,q,populate)
-        // console.log(prescriptions)
         res.json(prescriptions)
     } catch (error) {
          res.status(401)
@@ -113,7 +113,6 @@ router.put('/prescription/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        PrescriptionValidator.validate({name,doctorid, patientid, casehistory, description, medication, date, drugamount})
         let prescription = await PrescriptionController.update(id,{name,doctorid, patientid, casehistory, description, medication, date, drugamount})
         let doctor = await Staffs.findOne({_id : doctorid})
             if(patient){
@@ -186,9 +185,12 @@ router.get('/viewpayments', async function(req, res, next) {
 router.post('/appointment',async function(req, res, next) {
     try {
         const {doctorid,patientid,date} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        AppointmentValidator.validate({name,doctorid,patientid,date})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         let appointment =  await AppointmentController.create({name,doctorid,patientid,date})
         // =======================================================================================
         let doctor = await Staffs.findOne({_id : doctorid})           
@@ -219,8 +221,9 @@ router.put('/appointment/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        AppointmentValidator.validate({name,doctorid,patientid,date})
+        // ========================
         let appointment = await AppointmentController.update(id,{name,doctorid,patientid,date})
+        // ========================
         let doctor = await Staffs.findOne({_id : doctorid})          
         appointment.patients = patient
         appointment.doctor = doctor
@@ -246,9 +249,12 @@ router.delete('/appointment/:id', async function(req, res, next) {
 router.post('/bedallotment',async function(req, res, next) {
     try {
         const {patientid,patientstatus,bedtype,bednumber,allotmentdate,dischargedate,staffname} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        BedallotmentValidator.validate({name,patientid,patientstatus,bedtype,bednumber,allotmentdate,dischargedate,staffname})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }       
         let bedallotment =  await BedallotmentController.create({name,patientid,patientstatus,bedtype,bednumber,allotmentdate,dischargedate,staffname})
         // =======================================================================================
         bedallotment.patients = patient
@@ -277,7 +283,6 @@ router.put('/bedallotment/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        BedallotmentValidator.validate({name,patientid,patientstatus,bedtype,bednumber,allotmentdate,dischargedate,staffname})
         let bedallotment = await BedallotmentController.update(id,{name,patientid,patientstatus,bedtype,bednumber,allotmentdate,dischargedate,staffname})
         // ========================================================
         bedallotment.patients = patient
@@ -303,7 +308,6 @@ router.delete('/bedallotment/:id', async function(req, res, next) {
 router.post('/blooddonor',async function(req, res, next) {
     try {
         const {name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname} = req.body
-        BlooddonorValidator.validate({name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname})
         await BlooddonorController.create({name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname})
         return res.status(200).send('Added Successfully')
     } catch (error) {
@@ -325,7 +329,6 @@ router.put('/blooddonor/:id', async function(req, res, next) {
     try {
         const{ name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname } = req.body
         const id = req.params.id
-        BlooddonorValidator.validate({name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname})
         await BlooddonorController.update(id,{name,email,address,phone,gender,age,bloodgroup,bags,lastdonationdate,staffname})
         return res.status(200).send('Updated Successfully')
     } catch (error) {
@@ -348,9 +351,12 @@ router.delete('/blooddonor/:id', async function(req, res, next) {
 router.post('/dischargeblood',async function(req, res, next) {
     try {
         const {patientid,bloodgroup,bags,charges,date,staffname} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        DischargebloodValidator.validate({name,patientid,bloodgroup,bags,charges,date,staffname})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         let dischargeblood =  await DischargebloodController.create({name,patientid,bloodgroup,bags,charges,date,staffname})
         // =======================================================================================
         dischargeblood.patients = patient
@@ -379,7 +385,6 @@ router.put('/dischargeblood/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        DischargebloodValidator.validate({name,patientid,bloodgroup,bags,charges,date,staffname})
         let dischargeblood = await DischargebloodController.update(id,{name,patientid,bloodgroup,bags,charges,date,staffname})
         // ========================================================
         dischargeblood.patients = patient
@@ -405,9 +410,12 @@ router.delete('/dischargeblood/:id', async function(req, res, next) {
 router.post('/report',async function(req, res, next) {
     try {
         const {type,staffname,patientid,description,date} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        ReportValidator.validate({name,type,staffname,patientid,description,date})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         let report =  await ReportController.create({name,type,staffname,patientid,description,date})
         // =======================================================================================
         report.patients = patient
@@ -436,7 +444,6 @@ router.put('/report/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        ReportValidator.validate({name,type,staffname,patientid,description,date,outcomestatus})
         let report = await ReportController.update(id,{name,type,staffname,patientid,description,date,outcomestatus})
         // ===================================
         report.patients = patient
@@ -626,7 +633,6 @@ router.get('/ab_negative',async function(req, res, next) {
 router.post('/bed',async function(req, res, next) {
   try {
       const {type} = req.body
-      BedValidator.validate({type})
       await BedController.create({type})
       return res.status(200).send('Added Successfully')
   } catch (error) {
@@ -648,7 +654,6 @@ router.put('/bed/:id', async function(req, res, next) {
   try {
       const{ type } = req.body
       const id = req.params.id
-      BedValidator.validate({type})
       await BedController.update(id,{type})
       return res.status(200).send('Updated Successfully')
   } catch (error) {

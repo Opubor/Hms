@@ -25,7 +25,6 @@ router.get('/me',auth, async function(req,res,next){
 router.post('/department', async function(req, res, next) {
     try {
         const{ name,description } = req.body
-        departmentValidator.validate({name,description})
         await departmentController.create({name,description})
         return res.status(200).send('Added Successfully')
     } catch (error) {
@@ -47,7 +46,6 @@ router.put('/department/:id', async function(req, res, next) {
     try {
         const{ name,description } = req.body
         const id = req.params.id
-        departmentValidator.validate({name,description})
         await departmentController.update(id,{name,description})
         return res.status(200).send('Updated Successfully')
     } catch (error) {
@@ -67,35 +65,9 @@ router.delete('/department/:id', async function(req, res, next) {
 
 // STAFF : STAFF : STAFF : STAFF : STAFF
 // CREATE_STAFF
-// router.post('/createadmin', async function(req, res, next) {
-//     try {
-//         let name = "Opubor Tony"
-//         let email = "opubortony@gmail.com"
-//         let role="admin"
-//         let department = "admin"
-//         let address = "No 9 rubber Plantation Warri"
-//         let phone = "09139124809"
-//         let password = "password"
-//         let registeredStaff = await Staffs.find()
-//         if(!registeredStaff){
-//             staffValidator.validate({name,email,role,department,address,phone,password})
-//             await staffController.create({name,email,role,department,address,phone,password})
-//             return res.status(200).send('Added Successfully')
-//         }else{
-//             return ;
-//         }
-       
-//     } catch (error) {
-//         return res.status(401).send(error.message)
-//     }
-// });
-
-// STAFF : STAFF : STAFF : STAFF : STAFF
-// CREATE_STAFF
 router.post('/staff', async function(req, res, next) {
     try {
         const{ name,email,role,department,address,phone,password } = req.body
-        staffValidator.validate({name,email,role,department,address,phone,password})
         await staffController.create({name,email,role,department,address,phone,password})
         return res.status(200).send('Added Successfully')
     } catch (error) {
@@ -117,7 +89,6 @@ router.put('/staff/:id', async function(req, res, next) {
     try {
         const{ name,email,role,department,address,phone,password } = req.body
         const id = req.params.id
-        staffValidator.validate({name,email,role,department,address,phone,password})
         await staffController.update(id,{name,email,role,department,address,phone,password})
         return res.status(200).send('Updated Successfully')
     } catch (error) {
@@ -147,7 +118,7 @@ router.put('/profile/:id', async function(req, res, next) {
         return res.send(error)
     }
 });
-// UPDATE_PROFILE
+// UPDATE_PROFILE#PASSWORD
 router.put('/updatepassword/:id', async function(req, res, next) {
     try {
         const{ oldpassword, newpassword, confirmpassword  } = req.body

@@ -12,8 +12,12 @@ const vitalSignsController = new CrudService(VitalSigns, VitalSignsValidator)
 router.post('/vital_signs',async function(req, res, next) {
     try {
         const {patientid, bloodpressure, temperature, pulse, spo, weight, Respirationrate, height} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         VitalSignsValidator.validate({name,patientid, bloodpressure, temperature, pulse, spo, weight, Respirationrate, height})
         let vitalSigns =  await vitalSignsController.create({name,patientid, bloodpressure, temperature, pulse, spo, weight, Respirationrate, height})
         // =======================================================================================

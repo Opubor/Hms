@@ -3,6 +3,11 @@ Joi.objectId = require("joi-objectid")(Joi);
 const createHttpError = require("http-errors");
 
 
+const loginValidator = Joi.object({
+    email: Joi.string().email().max(200).required().messages({'string.empty': 'Please provide an Email'}),
+    password: Joi.string().max(200).required().messages({'string.empty': 'Please provide a Password'})
+});
+
 const departmentValidator = Joi.object({
     name: Joi.string().max(200).required().messages({'string.empty': 'Department Name is required'}),
     description: Joi.string().max(200).required().messages({'string.empty': 'Description is required'})
@@ -130,4 +135,4 @@ const QueueValidator = Joi.object({
     name: Joi.string().max(200).required().messages({'string.empty': 'Please provide a name'}),
 });
 
-module.exports={departmentValidator, staffValidator, profileValidator, patientValidator, PrescriptionValidator, AppointmentValidator, BedallotmentValidator,BlooddonorValidator, DischargebloodValidator, ReportValidator, BedValidator, VitalSignsValidator, DrugAmountValidator,PaymentStatusValidator, UpdatePasswordValidator, PaymentsValidator, QueueValidator}
+module.exports={departmentValidator, staffValidator, profileValidator, patientValidator, PrescriptionValidator, AppointmentValidator, BedallotmentValidator,BlooddonorValidator, DischargebloodValidator, ReportValidator, BedValidator, VitalSignsValidator, DrugAmountValidator,PaymentStatusValidator, UpdatePasswordValidator, PaymentsValidator, QueueValidator, loginValidator}

@@ -12,9 +12,12 @@ const paymentsController = new CrudService(Payments, PaymentsValidator)
 router.post('/payments',async function(req, res, next) {
     try {
         const {date, amount, patientid, modeofpayment, purpose} = req.body
-        let patient = await Patients.findOne({_id : patientid})
-        let name = patient.name
-        PaymentsValidator.validate({name, date, amount, patientid, modeofpayment, purpose})
+        let name = ""
+        let patient = []
+        if (patientid.match(/^[0-9a-fA-F]{24}$/)) {
+          patient = await Patients.findOne({_id : patientid})
+          name = patient.name
+        }   
         let payment =  await paymentsController.create({name, date, amount, patientid, modeofpayment, purpose})
         // =======================================================================================
         payment.patients = patient
@@ -43,8 +46,9 @@ router.put('/payments/:id', async function(req, res, next) {
         const id = req.params.id
         let patient = await Patients.findOne({_id : patientid})
         let name = patient.name
-        PaymentsValidator.validate({name,date, amount, patientid, modeofpayment, purpose})
+        // ===================
         let payment = await paymentsController.update(id,{name,date, amount, patientid, modeofpayment, purpose})
+        // ===================
         payment.patients = patient
         payment.save()
         return res.status(200).send('Updated Successfully')
