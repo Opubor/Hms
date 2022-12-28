@@ -10,7 +10,7 @@ const departmentController = new CrudService(Departments, departmentValidator)
 const staffController = new CrudService(Staffs,staffValidator)
 const profileController = new CrudService(Staffs,profileValidator)
 
-
+// USER-DETAILS : USER-DETAILS : USER-DETAILS : USER-DETAILS
 router.get('/me',auth, async function(req,res,next){
     try {
         const currentUser = await getStaff(req.staff.id)
@@ -20,6 +20,7 @@ router.get('/me',auth, async function(req,res,next){
         return res.status(401).send(error.message)
     }
 })
+
 // DEPARTMENT : DEPARTMENT : DEPARTMENT : DEPARTMENT : DEPARTMENT
 // CREATE_DEPARTMENT
 router.post('/department', async function(req, res, next) {
@@ -68,8 +69,13 @@ router.delete('/department/:id', async function(req, res, next) {
 router.post('/staff', async function(req, res, next) {
     try {
         const{ name,email,role,department,address,phone,password } = req.body
-        await staffController.create({name,email,role,department,address,phone,password})
-        return res.status(200).send('Added Successfully')
+        let usedEmail = await Staffs.findOne({email : email})
+        if(usedEmail){
+            return res.status(404).send('Email already exists')
+        }else{
+            await staffController.create({name,email,role,department,address,phone,password})
+            return res.status(200).send('Added Successfully')
+        }
     } catch (error) {
         return res.status(401).send(error.message)
     }

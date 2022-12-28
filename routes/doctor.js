@@ -1,4 +1,5 @@
 var express = require('express');
+const { randomBytes } = require('crypto')
 var router = express.Router();
 const { Staffs } = require('../models/staffs');
 const {Patients} = require('../models/Patients')
@@ -28,7 +29,9 @@ const paymentsController = new CrudService(Payments, PaymentsValidator)
 router.post('/patient',async function(req, res, next) {
     try {
         const {name, email, address, phone, sex, dob, age, bloodgroup, tor} = req.body
-        await PatientController.create({name, email, address, phone, sex, dob, age, bloodgroup, tor})
+        const date = new Date();
+        const registrationId = date.getFullYear() + "-" + randomBytes(2).toString("hex")
+        await PatientController.create({name, email, address, phone, sex, dob, age, bloodgroup, tor, registrationId})
         return res.status(200).send('Added Successfully')
     } catch (error) {
         return res.status(401).send(error.message)
@@ -47,9 +50,9 @@ router.get('/patient', async function(req, res, next) {
 // UPDATE_PATIENT
 router.put('/patient/:id', async function(req, res, next) {
     try {
-        const{ name, email, address, phone, sex, dob, age, bloodgroup, tor } = req.body
+        const{ name, email, address, phone, sex, dob, age, bloodgroup, tor, registrationId } = req.body
         const id = req.params.id
-        await PatientController.update(id,{name, email, address, phone, sex, dob, age, bloodgroup, tor})
+        await PatientController.update(id,{name, email, address, phone, sex, dob, age, bloodgroup, tor, registrationId })
         return res.status(200).send('Updated Successfully')
     } catch (error) {
         return res.send(error)
@@ -162,7 +165,7 @@ router.put('/accountant_payment/:id', async function(req, res, next) {
 
       if(currentPayment.paymentstatus === "Paid"){
         let payment = await paymentsController.create({name: currentPayment.name, date: currentPayment.paymentdate, amount: currentPayment.drugamount, patientid: currentPayment.patientid, modeofpayment: currentPayment.modeofpayment, purpose: "Medication/drugs"})
-        payment.patients = currentPayment
+        payment.patients = currentPayment.patientid
         payment.save()
       }
       return res.status(200).send('Updated Successfully')

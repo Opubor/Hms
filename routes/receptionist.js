@@ -39,7 +39,7 @@ router.get('/queue',async function(req, res, next) {
          res.status(401)
     }
 })
-// UPDATE_VITAL-SIGNS
+// UPDATE_QUEUE
 router.put('/queue/:id', async function(req, res, next) {
     try {
         const{ name } = req.body

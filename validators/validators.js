@@ -1,6 +1,5 @@
 const Joi = require("joi");
 Joi.objectId = require("joi-objectid")(Joi);
-const createHttpError = require("http-errors");
 
 
 const loginValidator = Joi.object({
@@ -38,6 +37,7 @@ const patientValidator = Joi.object({
     age: Joi.string().max(200).required().messages({'string.empty': 'Age is required'}),
     bloodgroup: Joi.string().min(0).max(200),
     tor: Joi.string().max(200).required().messages({'string.empty': 'Time of registration is required'}),
+    registrationId: Joi.string().max(200).required().messages({'string.empty': 'Registration Id is required'}),
 });
 const PrescriptionValidator = Joi.object({
     name: Joi.string().max(200).required().messages({'string.empty': 'Please provide a name'}),

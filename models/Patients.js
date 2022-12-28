@@ -10,6 +10,7 @@ const PatientSchema = new Schema({
     age: String,
     bloodgroup: String,
     tor: String,
+    registrationId: String,
     prescriptions: [{type: Schema.Types.ObjectId, ref: 'Prescriptions'}]
 })
 

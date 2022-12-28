@@ -26,6 +26,7 @@ class CrudService{
         }
     }
 
+    // To read only staffs
     async staffRead(edit,q,role){
         if(edit){
             return await this.model.findById(edit)
@@ -37,6 +38,8 @@ class CrudService{
             return await this.model.find({role:role}).sort({_id : 'descending'})
         }
     }
+
+    // To read only reports(Birth, Death, Operation)
     async reportRead(edit,q,type,populate){
         if(edit){
             return await this.model.findById(edit).populate(populate)
