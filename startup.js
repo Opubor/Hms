@@ -7,13 +7,12 @@ var connectDB = require('./config/db')
 connectDB()
 
 module.exports = async function createAdmin(name,email,role,department,address,phone,password){
-    let registeredStaff = await Staffs.findOne()
-    if(!registeredStaff){
+    try {
         await Staffs.create({name,email,role,department,address,phone,password})
         return console.log("Admin Created")
-    }else{
-        console.log("Failed")
-    } 
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 

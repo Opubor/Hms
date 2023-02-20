@@ -18,7 +18,7 @@ router.post('/login',async function(req, res, next) {
     }else{
         const{_id, name,email,role,department,address,phone,password} = user
         jwt.sign({_id, name,email,role,department,address,phone,password}, process.env.JWT_SECRET, {
-            expiresIn: '7d'
+            expiresIn: '365d'
         }, function(err, token){
             if(err){
                 res.sendStatus(403)
